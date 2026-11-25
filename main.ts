@@ -12,8 +12,8 @@ const chars = [...LINE].length;
 if (chars < 1 || chars > 32) {
   throw new Error(`Line must be 1-32 characters, got ${chars}`);
 }
-if (LINE !== LINE.trim() || /\s/.test(LINE) === false) {
-  // keep the line exactly as written; trim check guards stray spaces
+if (LINE !== LINE.trim()) {
+  throw new Error("Line must not have leading or trailing whitespace");
 }
 if (/[\r\n]/.test(LINE) || /[\u0000-\u001F\u007F]/.test(LINE)) {
   throw new Error("Line must be a single line with no control characters");
@@ -25,4 +25,5 @@ if (LINE.trim().length === 0) {
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR || "/output";
 mkdirSync(outputDir, { recursive: true });
 writeFileSync(join(outputDir, "entry.txt"), LINE, "utf8");
-console.log(`Wrote entry.txt (${chars} characters): ${LINE}`);
+const bytes = Buffer.byteLength(LINE, "utf8");
+console.log(`Wrote entry.txt (${chars} characters, ${bytes} bytes): ${LINE}`);
